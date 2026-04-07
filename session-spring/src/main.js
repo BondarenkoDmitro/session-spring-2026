@@ -140,7 +140,12 @@ function renderWeekSelector() {
   }
 
   selector.innerHTML = '';
-  for (let i = 1; i <= 8; i++) {
+  
+  // Определяем максимальную неделю из данных
+  const maxWeek = Math.max(...state.days.map(d => d.week || 1), 1);
+  
+  // Создаём кнопки только для существующих недель
+  for (let i = 1; i <= maxWeek; i++) {
     const btn = document.createElement('button');
     btn.className = `week-btn ${state.currentWeek === i ? 'active' : ''}`;
     btn.textContent = `Неделя ${i}`;
