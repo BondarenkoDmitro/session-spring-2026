@@ -97,9 +97,18 @@ let state = {
 
 // Initialize
 function init() {
+  // Создаём main-content контейнер если его нет
+  let mainContent = document.getElementById('mainContent');
+  if (!mainContent) {
+    const container = document.querySelector('.container');
+    mainContent = document.createElement('div');
+    mainContent.id = 'mainContent';
+    mainContent.className = 'main-content';
+    container.appendChild(mainContent);
+  }
+  
   loadFromLocalStorage();
   filterByWeek(1);
-  renderDays();
   updateStats();
   setupEventListeners();
   renderWeekSelector();
@@ -124,7 +133,62 @@ function saveToLocalStorage() {
 function filterByWeek(week) {
   state.currentWeek = week;
   state.filteredDays = state.days.filter(d => d.week === week);
-  renderDays();
+  
+  // Добавляем визуальный эффект переключения
+  const container = document.getElementById('daysContainer');
+  container.style.opacity = '0';
+  container.style.transform = 'translateY(20px)';
+  
+  setTimeout(() => {
+    renderDays();
+    container.style.opacity = '1';
+    container.style.transform = 'translateY(0)';
+  }, 300);
+  
+  updateStats();
+}
+
+// Render week header
+function renderWeekHeader() {
+  let header = document.getElementById('weekHeader');
+  if (!header) {
+    const mainContent = document.querySelector('.main-content');
+    header = document.createElement('div');
+    header.id = 'weekHeader';
+    header.className = 'week-header';
+    mainContent.insertBefore(header, mainContent.firstChild);
+  }
+
+  const week = state.currentWeek;
+  const weekDays = state.filteredDays;
+  
+  if (weekDays.length === 0) {
+    header.innerHTML = `<h2>📭 Неделя ${week} - пусто</h2>`;
+    return;
+  }
+
+  // Определяем дату начала и конца недели
+  const firstDay = new Date(weekDays[0].date + 'T00:00:00');
+  const lastDay = new Date(weekDays[weekDays.length - 1].date + 'T00:00:00');
+  
+  const startDate = new Intl.DateTimeFormat('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+  }).format(firstDay);
+  
+  const endDate = new Intl.DateTimeFormat('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(lastDay);
+
+  header.innerHTML = `
+    <div class="week-header-content">
+      <h2 class="week-number">📅 Неделя <span class="number">${week}</span></h2>
+      <p class="week-dates">${startDate} — ${endDate}</p>
+      <div class="week-counter">${weekDays.length} дней / ${state.filteredDays.reduce((sum, day) => sum + day.tasks.length, 0)} задач</div>
+    </div>
+  `;
 }
 
 // Render week selector
@@ -168,6 +232,9 @@ function renderDays() {
     const dayCard = createDayCard(day);
     container.appendChild(dayCard);
   });
+  
+  // Добавляем заголовок недели
+  renderWeekHeader();
 }
 
 function createDayCard(day) {
