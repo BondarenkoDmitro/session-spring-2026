@@ -1,682 +1,503 @@
-/* ══════════════════════════════════════════
-   НАЧАЛЬНЫЕ ДАННЫЕ ПЛАНА
-   (из документа 07.04 - 04.06.2026)
-══════════════════════════════════════════ */
+import './style.css';
 
-window.INITIAL_DATA = [
-    {
-        id: 'w1',
-        title: 'НЕДЕЛЯ 1',
-        dates: '07.04 – 13.04.2026',
-        badge: 'normal',
-        days: [
-            {
-                id: 'w1d1', name: 'ВТ 07.04 (4–5 ч) ⭐ НАЧАЛО',
-                date: '2026-04-07',
-                tasks: [
-                    { id: 't1', text: 'Архітектура комп\'ютера — Лаб 1 (підготовка) → 2.5 год', done: false },
-                    { id: 't2', text: 'ООП — Лаб 1 (підготовка) → 2 год', done: false },
-                    { id: 't3', text: 'Ознайомлення з матеріалом → 0.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АРХІТЕКТУРИ: 12.04 (пт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w1d2', name: 'СР 08.04 (4–5 ч)',
-                date: '2026-04-08',
-                tasks: [
-                    { id: 't4', text: 'ООП — Лаб 1 (продолжение) → 2.5 год', done: false },
-                    { id: 't5', text: 'Вища математика — Лаб 1 (підготовка) → 1.5 год', done: false },
-                    { id: 't6', text: 'Вивчення матеріалу → 0.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 1 (08.04, ср)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w1d3', name: 'ЧТ 09.04 (4–5 ч)',
-                date: '2026-04-09',
-                tasks: [
-                    { id: 't7', text: 'ООП — Лаб 1 (завершение) → 2 год', done: false },
-                    { id: 't8', text: 'Дискретна математика — Лаб 1 (підготовка) → 2 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 1 (альт. день — чт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w1d4', name: 'ПТ 10.04 (4–5 ч)',
-                date: '2026-04-10',
-                tasks: [
-                    { id: 't9',  text: 'Дискретна математика — Лаб 1 (продолжение) → 2.5 год', done: false },
-                    { id: 't10', text: 'Вища математика — Лаб 1 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Дискретна математика Лаб 1 (10.04, пт)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w1d5', name: 'СБ 11.04 (4–5 ч)',
-                date: '2026-04-11',
-                tasks: [
-                    { id: 't11', text: 'Архітектура — Лаб 1 (продолжение) → 2.5 год', done: false },
-                    { id: 't12', text: 'Soft skills — Лаб 1 (підготовка) → 1.5 год', done: false },
-                    { id: 't13', text: 'Вивчення матеріалу → 0.5 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w1d6', name: 'ПН 12.04 (4–5 ч)',
-                date: '2026-04-12',
-                tasks: [
-                    { id: 't14', text: 'Архітектура — Лаб 1 (завершение) → 2.5 год', done: false },
-                    { id: 't15', text: 'Soft skills — Лаб 1 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Архітектура Лаб 1 (12.04, пн) ✅', type: 'green' }
-                ]
-            },
-            {
-                id: 'w1d7', name: 'НД 13.04 (4–5 ч)',
-                date: '2026-04-13',
-                tasks: [
-                    { id: 't16', text: 'Вища математика — Лаб 1 (завершение) → 2.5 год', done: false },
-                    { id: 't17', text: 'ООП — Лаб 2 (підготовка) → 1.5 год', done: false },
-                    { id: 't18', text: 'Підготовка до тижня', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
+// НОВЫЙ УПРОЩЕННЫЙ ПЛАН - ПО ОДНОЙ ЗАДАЧЕ НА ДЕНЬ
+const INITIAL_DAYS = [
+  // ========== НЕДЕЛЯ 1: 07.04 - 12.04 ==========
+  { id: '2026-04-07', name: 'ВТ 07.04 (4-5 ч)', date: '2026-04-07', week: 1, tasks: [
+    { id: 't1', text: 'ООП Лаб 3', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-08', name: 'СР 08.04 (4-5 ч)', date: '2026-04-08', week: 1, tasks: [
+    { id: 't2', text: 'Дискретна мат Лаб 2', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-09', name: 'ЧТ 09.04 (4-5 ч)', date: '2026-04-09', week: 1, tasks: [
+    { id: 't3', text: 'Вища мат Лаб 2', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-10', name: 'ПТ 10.04 (4-5 ч)', date: '2026-04-10', week: 1, tasks: [
+    { id: 't4', text: 'Soft Skills Лаб 2', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-11', name: 'СБ 11.04 (4-5 ч)', date: '2026-04-11', week: 1, tasks: [
+    { id: 't5', text: 'ООП Лаб 4', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-12', name: 'ВС 12.04 (4-5 ч)', date: '2026-04-12', week: 1, tasks: [
+    { id: 't6', text: 'Архітектура Лаб 4', status: 'not-started', progress: 0 },
+  ]},
 
-    {
-        id: 'w2',
-        title: 'НЕДЕЛЯ 2',
-        dates: '14.04 – 20.04.2026',
-        badge: 'normal',
-        days: [
-            {
-                id: 'w2d1', name: 'ВТ 14.04 (4–5 ч)',
-                date: '2026-04-14',
-                tasks: [
-                    { id: 't19', text: 'Архітектура — Лаб 2 (підготовка) → 2.5 год', done: false },
-                    { id: 't20', text: 'Дискретна математика — Лаб 2 (підготовка) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АРХІТЕКТУРИ: 19.04 (пт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w2d2', name: 'СР 15.04 (4–5 ч)',
-                date: '2026-04-15',
-                tasks: [
-                    { id: 't21', text: 'ООП — Лаб 2 (продолжение) → 2.5 год', done: false },
-                    { id: 't22', text: 'Вища математика — Лаб 2 (підготовка) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 2 (15.04, ср)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w2d3', name: 'ЧТ 16.04 (4–5 ч)',
-                date: '2026-04-16',
-                tasks: [
-                    { id: 't23', text: 'ООП — Лаб 2 (завершение) → 2 год', done: false },
-                    { id: 't24', text: 'Soft skills — Лаб 1 (завершение) → 1.5 год', done: false },
-                    { id: 't25', text: 'Вивчення матеріалу → 1 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 2 (альт. день — чт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w2d4', name: 'ПТ 17.04 (4–5 ч)',
-                date: '2026-04-17',
-                tasks: [
-                    { id: 't26', text: 'Дискретна математика — Лаб 2 (продолжение) → 2.5 год', done: false },
-                    { id: 't27', text: 'Архітектура — Лаб 2 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Дискретна математика Лаб 2 (17.04, пт)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w2d5', name: 'СБ 18.04 (4–5 ч)',
-                date: '2026-04-18',
-                tasks: [
-                    { id: 't28', text: 'Архітектура — Лаб 2 (завершение) → 2.5 год', done: false },
-                    { id: 't29', text: 'Вища математика — Лаб 2 (продолжение) → 1.5 год', done: false },
-                    { id: 't30', text: 'Вивчення матеріалу → 0.5 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w2d6', name: 'ПН 19.04 (4–5 ч)',
-                date: '2026-04-19',
-                tasks: [
-                    { id: 't31', text: 'Архітектура — Лаб 2 (остаток) → 2.5 год', done: false },
-                    { id: 't32', text: 'Soft skills — Лаб 2 (підготовка) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Архітектура Лаб 2 (19.04, пн) ✅', type: 'green' }
-                ]
-            },
-            {
-                id: 'w2d7', name: 'НД 20.04 (4–5 ч)',
-                date: '2026-04-20',
-                tasks: [
-                    { id: 't33', text: 'Вища математика — Лаб 2 (завершение) → 2.5 год', done: false },
-                    { id: 't34', text: 'ООП — Лаб 3 (підготовка) → 1.5 год', done: false },
-                    { id: 't35', text: 'Підготовка до тижня', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
+  // ========== НЕДЕЛЯ 2: 13.04 - 19.04 ==========
+  { id: '2026-04-13', name: 'ПН 13.04 (4-5 ч)', date: '2026-04-13', week: 2, tasks: [
+    { id: 't7', text: '🇬🇧 Підготовка доповіді', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-14', name: 'ВТ 14.04 (4-5 ч)', date: '2026-04-14', week: 2, tasks: [
+    { id: 't8', text: '🔴 Англійська доповідь', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-15', name: 'СР 15.04 (4-5 ч)', date: '2026-04-15', week: 2, tasks: [
+    { id: 't9', text: 'Дискретна мат Лаб 3', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-16', name: 'ЧТ 16.04 (4-5 ч)', date: '2026-04-16', week: 2, tasks: [
+    { id: 't10', text: 'Вища мат Лаб 3', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-17', name: 'ПТ 17.04 (4-5 ч)', date: '2026-04-17', week: 2, tasks: [
+    { id: 't11', text: 'Soft Skills Лаб 3', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-18', name: 'СБ 18.04 (4-5 ч)', date: '2026-04-18', week: 2, tasks: [
+    { id: 't12', text: 'ООП Лаб 5', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-19', name: 'ВС 19.04 (4-5 ч)', date: '2026-04-19', week: 2, tasks: [
+    { id: 't13', text: '📊 Підготовка (мат доповідь)', status: 'not-started', progress: 0 },
+  ]},
 
-    {
-        id: 'w3',
-        title: 'НЕДЕЛЯ 3 ⚠️ КРИТИЧНА',
-        dates: '21.04 – 27.04.2026',
-        badge: 'critical',
-        days: [
-            {
-                id: 'w3d1', name: 'ВТ 21.04 (5 ч) ⭐ НАПРУЖЕНА',
-                date: '2026-04-21',
-                tasks: [
-                    { id: 't36', text: '🔴 ВИЩА МАТЕМАТИКА — ДОПОВІДЬ (завершення) → 2.5 год', done: false },
-                    { id: 't37', text: 'Архітектура — Лаб 3 (підготовка) → 1.5 год', done: false },
-                    { id: 't38', text: 'Дискретна математика — Лаб 3 (підготовка) → 1 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АРХІТЕКТУРИ: 26.04 (пт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w3d2', name: 'СР 22.04 (4–5 ч)',
-                date: '2026-04-22',
-                tasks: [
-                    { id: 't39', text: 'ООП — Лаб 3 (продолжение) → 2.5 год', done: false },
-                    { id: 't40', text: 'Вища математика — Лаб 3 (підготовка) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 3 (22.04, ср)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w3d3', name: 'ЧТ 23.04 (4–5 ч)',
-                date: '2026-04-23',
-                tasks: [
-                    { id: 't41', text: 'ООП — Лаб 3 (завершение) → 2 год', done: false },
-                    { id: 't42', text: 'Soft skills — Лаб 2 (продолжение) → 1.5 год', done: false },
-                    { id: 't43', text: 'Вивчення матеріалу → 1 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 3 (альт. день — чт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w3d4', name: 'ПТ 24.04 (4–5 ч)',
-                date: '2026-04-24',
-                tasks: [
-                    { id: 't44', text: 'Дискретна математика — Лаб 3 (продолжение) → 2.5 год', done: false },
-                    { id: 't45', text: 'Архітектура — Лаб 3 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Дискретна математика Лаб 3 (24.04, пт)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w3d5', name: 'СБ 25.04 (4–5 ч)',
-                date: '2026-04-25',
-                tasks: [
-                    { id: 't46', text: 'Архітектура — Лаб 3 (продолжение) → 2.5 год', done: false },
-                    { id: 't47', text: 'Вища математика — Лаб 3 (продолжение) → 1.5 год', done: false },
-                    { id: 't48', text: 'Вивчення матеріалу → 0.5 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w3d6', name: 'ПН 26.04 (4–5 ч)',
-                date: '2026-04-26',
-                tasks: [
-                    { id: 't49', text: 'Архітектура — Лаб 3 (завершение) → 2.5 год', done: false },
-                    { id: 't50', text: 'Soft skills — Лаб 2 (завершение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Архітектура Лаб 3 (26.04, пн) ✅', type: 'green' }
-                ]
-            },
-            {
-                id: 'w3d7', name: 'НД 27.04 (4–5 ч)',
-                date: '2026-04-27',
-                tasks: [
-                    { id: 't51', text: 'Вища математика — Лаб 3 (завершение) → 2.5 год', done: false },
-                    { id: 't52', text: 'ООП — Лаб 4 (підготовка) → 1.5 год', done: false },
-                    { id: 't53', text: 'Підготовка до тижня', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
+  // ========== НЕДЕЛЯ 3: 20.04 - 26.04 ==========
+  { id: '2026-04-20', name: 'ПН 20.04 (4-5 ч)', date: '2026-04-20', week: 3, tasks: [
+    { id: 't14', text: '📊 Підготовка (мат доповідь)', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-21', name: 'ВТ 21.04 (4-5 ч)', date: '2026-04-21', week: 3, tasks: [
+    { id: 't15', text: '🔴 Вища мат доповідь', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-22', name: 'СР 22.04 (4-5 ч)', date: '2026-04-22', week: 3, tasks: [
+    { id: 't16', text: 'Дискретна мат Лаб 4', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-23', name: 'ЧТ 23.04 (4-5 ч)', date: '2026-04-23', week: 3, tasks: [
+    { id: 't17', text: 'Вища мат Лаб 4', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-24', name: 'ПТ 24.04 (4-5 ч)', date: '2026-04-24', week: 3, tasks: [
+    { id: 't18', text: 'Soft Skills Лаб 4', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-25', name: 'СБ 25.04 (4-5 ч)', date: '2026-04-25', week: 3, tasks: [
+    { id: 't19', text: 'ООП Лаб 6', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-26', name: 'ВС 26.04 (4-5 ч)', date: '2026-04-26', week: 3, tasks: [
+    { id: 't20', text: 'Архітектура Лаб 5', status: 'not-started', progress: 0 },
+  ]},
 
-    {
-        id: 'w4',
-        title: 'НЕДЕЛЯ 4',
-        dates: '28.04 – 04.05.2026',
-        badge: 'normal',
-        days: [
-            {
-                id: 'w4d1', name: 'ВТ 28.04 (4–5 ч)',
-                date: '2026-04-28',
-                tasks: [
-                    { id: 't54', text: 'Архітектура — Лаб 4 (підготовка) → 2.5 год', done: false },
-                    { id: 't55', text: 'Дискретна математика — закончилась ✅', done: true },
-                    { id: 't56', text: 'Soft skills — Лаб 3 (підготовка) → 1 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АРХІТЕКТУРИ: 03.05 (пт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w4d2', name: 'СР 29.04 (4–5 ч)',
-                date: '2026-04-29',
-                tasks: [
-                    { id: 't57', text: 'ООП — Лаб 4 (продолжение) → 2.5 год', done: false },
-                    { id: 't58', text: 'Soft skills — Лаб 3 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 4 (29.04, ср)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w4d3', name: 'ЧТ 30.04 (4–5 ч)',
-                date: '2026-04-30',
-                tasks: [
-                    { id: 't59', text: 'ООП — Лаб 4 (завершение) → 2 год', done: false },
-                    { id: 't60', text: 'Soft skills — Лаб 3 (завершение) → 1.5 год', done: false },
-                    { id: 't61', text: 'Вивчення матеріалу → 1 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 4 (альт. день — чт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w4d4', name: 'ПТ 01.05 (4–5 ч) 🎉 СВЯТО',
-                date: '2026-05-01',
-                holiday: true,
-                tasks: [
-                    { id: 't62', text: 'Архітектура — Лаб 4 (продолжение) → 2.5 год', done: false },
-                    { id: 't63', text: 'Soft skills — Самостійна 1 (підготовка) → 1.5 год', done: false },
-                    { id: 't64', text: '✅ ДИСКРЕТНА МАТЕМАТИКА ГОТОВА', done: true },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w4d5', name: 'СБ 02.05 (4–5 ч)',
-                date: '2026-05-02',
-                tasks: [
-                    { id: 't65', text: 'Архітектура — Лаб 4 (продолжение) → 2.5 год', done: false },
-                    { id: 't66', text: 'Вища математика — повторення перед сесією → 1.5 год', done: false },
-                    { id: 't67', text: 'Вивчення матеріалу → 0.5 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w4d6', name: 'ПН 03.05 (4–5 ч)',
-                date: '2026-05-03',
-                tasks: [
-                    { id: 't68', text: 'Архітектура — Лаб 4 (завершение) → 2.5 год', done: false },
-                    { id: 't69', text: 'Soft skills — Самостійна 1 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: Архітектура Лаб 4 (03.05, пн) ✅', type: 'green' }
-                ]
-            },
-            {
-                id: 'w4d7', name: 'НД 04.05 (4–5 ч)',
-                date: '2026-05-04',
-                tasks: [
-                    { id: 't70', text: 'ООП — Лаб 5 (підготовка) → 2.5 год', done: false },
-                    { id: 't71', text: 'Soft skills — Самостійна 1 (завершение) → 1.5 год', done: false },
-                    { id: 't72', text: 'Підготовка до тижня', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
+  // ========== НЕДЕЛЯ 4: 27.04 - 29.04 ==========
+  { id: '2026-04-27', name: 'ПН 27.04 (4-5 ч)', date: '2026-04-27', week: 4, tasks: [
+    { id: 't21', text: 'Soft Skills Самостійна 1', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-28', name: 'ВТ 28.04 (4-5 ч)', date: '2026-04-28', week: 4, tasks: [
+    { id: 't22', text: 'ООП Лаб 7', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-04-29', name: 'СР 29.04 (4-5 ч)', date: '2026-04-29', week: 4, tasks: [
+    { id: 't23', text: 'Soft Skills Самостійна 2', status: 'not-started', progress: 0 },
+  ]},
 
-    {
-        id: 'w5',
-        title: 'НЕДЕЛЯ 5',
-        dates: '05.05 – 11.05.2026',
-        badge: 'normal',
-        days: [
-            {
-                id: 'w5d1', name: 'ВТ 05.05 (4–5 ч)',
-                date: '2026-05-05',
-                tasks: [
-                    { id: 't73', text: 'ООП — Лаб 5 (продолжение) → 2.5 год', done: false },
-                    { id: 't74', text: 'Англійська — ДОПОВІДЬ (підготовка) → 1.5 год', done: false },
-                    { id: 't75', text: '✅ АРХІТЕКТУРА ГОТОВА', done: true },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w5d2', name: 'СР 06.05 (4–5 ч)',
-                date: '2026-05-06',
-                tasks: [
-                    { id: 't76', text: 'ООП — Лаб 5 (продолжение) → 2.5 год', done: false },
-                    { id: 't77', text: 'Англійська — ДОПОВІДЬ (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 5 (06.05, ср)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w5d3', name: 'ЧТ 07.05 (4–5 ч)',
-                date: '2026-05-07',
-                tasks: [
-                    { id: 't78', text: 'ООП — Лаб 5 (завершение) → 2 год', done: false },
-                    { id: 't79', text: 'Англійська — ДОПОВІДЬ (продолжение) → 2 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 СДАЧА: ООП Лаб 5 (альт. день — чт)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w5d4', name: 'ПТ 08.05 (4–5 ч)',
-                date: '2026-05-08',
-                tasks: [
-                    { id: 't80', text: 'Вища математика — повторення → 2.5 год', done: false },
-                    { id: 't81', text: 'Англійська — ДОПОВІДЬ (продолжение) → 1.5 год', done: false },
-                    { id: 't82', text: '✅ ВСІ ООП ЛАБОРАТОРНІ ГОТОВІ', done: true },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w5d5', name: 'СБ 09.05 (4–5 ч) 🎉 СВЯТО',
-                date: '2026-05-09',
-                holiday: true,
-                tasks: [
-                    { id: 't83', text: 'Англійська — ДОПОВІДЬ (продолжение) → 2 год', done: false },
-                    { id: 't84', text: 'Soft skills — Самостійна 2 (підготовка) → 2 год', done: false },
-                    { id: 't85', text: 'Відпочинок', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w5d6', name: 'ПН 10.05 (4–5 ч)',
-                date: '2026-05-10',
-                tasks: [
-                    { id: 't86', text: 'Англійська — остаточна підготовка → 2.5 год', done: false },
-                    { id: 't87', text: 'Soft skills — Самостійна 2 (продолжение) → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АНГЛІЙСЬКОЇ: 14.05', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w5d7', name: 'НД 11.05 (4–5 ч)',
-                date: '2026-05-11',
-                tasks: [
-                    { id: 't88', text: 'Вища математика — інтенсивне повторення → 2.5 год', done: false },
-                    { id: 't89', text: 'Англійська — репетиція доповіді → 1.5 год', done: false },
-                    { id: 't90', text: 'Підготовка до тижня', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
-
-    {
-        id: 'w6',
-        title: 'НЕДЕЛЯ 6',
-        dates: '12.05 – 18.05.2026',
-        badge: 'normal',
-        days: [
-            {
-                id: 'w6d1', name: 'ВТ 12.05 (4–5 ч)',
-                date: '2026-05-12',
-                tasks: [
-                    { id: 't91', text: 'Вища математика — інтенсивне повторення → 2.5 год', done: false },
-                    { id: 't92', text: 'Soft skills — Самостійна 2 (продолжение) → 1.5 год', done: false },
-                    { id: 't93', text: '✅ ООП ГОТОВА', done: true },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w6d2', name: 'СР 13.05 (4–5 ч)',
-                date: '2026-05-13',
-                tasks: [
-                    { id: 't94', text: 'Англійська — ДОПОВІДЬ (остаточна підготовка) → 2.5 год', done: false },
-                    { id: 't95', text: 'Вища математика — повторення → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АНГЛІЙСЬКОЇ ЗАВТРА: 14.05', type: 'red' }
-                ]
-            },
-            {
-                id: 'w6d3', name: 'ЧТ 14.05 (4–5 ч) ⚠️ ВАЖЛИВО',
-                date: '2026-05-14',
-                tasks: [
-                    { id: 't96', text: '🔴 АНГЛІЙСЬКА — ДОПОВІДЬ (здача) → 2 год', done: false },
-                    { id: 't97', text: 'Вища математика — остаточне повторення → 2 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН АНГЛІЙСЬКОЇ: 14.05 ✅', type: 'green' }
-                ]
-            },
-            {
-                id: 'w6d4', name: 'ПТ 15.05 (4–5 ч)',
-                date: '2026-05-15',
-                tasks: [
-                    { id: 't98', text: 'Вища математика — готівка до сесії → 2.5 год', done: false },
-                    { id: 't99', text: 'Soft skills — Самостійна 2 (завершение) → 1.5 год', done: false },
-                    { id: 't100', text: '✅ АНГЛІЙСЬКА ГОТОВА', done: true },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w6d5', name: 'СБ 16.05 (4–5 ч)',
-                date: '2026-05-16',
-                tasks: [
-                    { id: 't101', text: 'Вища математика — інтенсив перед сесією → 3 год', done: false },
-                    { id: 't102', text: 'Soft skills — перевірка завершених робіт → 1 год', done: false },
-                    { id: 't103', text: 'Відпочинок', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w6d6', name: 'ПН 17.05 (4–5 ч)',
-                date: '2026-05-17',
-                tasks: [
-                    { id: 't104', text: 'Вища математика — остаточне повторення → 2.5 год', done: false },
-                    { id: 't105', text: 'Soft skills — останні штрихи → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН МАТЕМАТИКИ ПЕРЕНЕСЕН НА 22.05!', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w6d7', name: 'НД 18.05 (4–5 ч)',
-                date: '2026-05-18',
-                tasks: [
-                    { id: 't106', text: 'Вища математика — ІНТЕНСИВ → 3 год', done: false },
-                    { id: 't107', text: 'Soft skills — перевірка перед сесією → 1 год', done: false },
-                    { id: 't108', text: 'Відпочинок', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
-
-    {
-        id: 'w7',
-        title: 'НЕДЕЛЯ 7 ⚠️ КОНЦЕРТ 22.05',
-        dates: '19.05 – 25.05.2026',
-        badge: 'concert',
-        days: [
-            {
-                id: 'w7d1', name: 'ВТ 19.05 (4–5 ч)',
-                date: '2026-05-19',
-                tasks: [
-                    { id: 't109', text: 'Вища математика — остаточна подача всіх лаб (підготовка) → 3 год', done: false },
-                    { id: 't110', text: 'Soft skills — перевірка → 1 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ДЕДЛАЙН МАТЕМАТИКИ: 22.05 (перенесен з 23.05)', type: 'red' }
-                ]
-            },
-            {
-                id: 'w7d2', name: 'СР 20.05 (4–5 ч)',
-                date: '2026-05-20',
-                tasks: [
-                    { id: 't111', text: 'Вища математика — остаточне повторення → 3 год', done: false },
-                    { id: 't112', text: 'Soft skills — фіналізація → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 БЕЗ 23.05 — є концерт!', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w7d3', name: 'ЧТ 21.05 (4–5 ч)',
-                date: '2026-05-21',
-                tasks: [
-                    { id: 't113', text: 'Вища математика — інтенсивна підготовка → 3.5 год', done: false },
-                    { id: 't114', text: 'Soft skills — остаточна перевірка → 0.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ЗА ДЕНЬ ДО ДЕДЛАЙНУ', type: 'red' }
-                ]
-            },
-            {
-                id: 'w7d4', name: 'ПТ 22.05 (4–5 ч) 🔴 ДЕДЛАЙН',
-                date: '2026-05-22',
-                tasks: [
-                    { id: 't115', text: '🔴 ВИЩА МАТЕМАТИКА — ОСТАТОЧНА ПОДАЧА ВСІХ ЛАБ → до кінця дня', done: false },
-                    { id: 't116', text: 'Soft skills — завершення остатків → 1 год', done: false },
-                    { id: 't117', text: '✅ МАТЕМАТИКА ГОТОВА', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 КОНЦЕРТ СЬОГОДНІ ВВЕЧЕРІ 🎵', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w7d5', name: 'НД 24.05 (4–5 ч) [без 23.05]',
-                date: '2026-05-24',
-                tasks: [
-                    { id: 't118', text: 'ПОЧАТОК ПІДГОТОВКИ ДО СЕСІЇ → 3 год', done: false },
-                    { id: 't119', text: 'Soft skills — остаточна перевірка → 1.5 год', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ЗАЛИШИЛОСЬ 6 ДНІВ ДО СЕСІЇ (без 23.05)', type: 'yellow' }
-                ]
-            },
-            {
-                id: 'w7d6', name: 'ПН 25.05 (4–5 ч)',
-                date: '2026-05-25',
-                tasks: [
-                    { id: 't120', text: 'ІНТЕНСИВНА ПІДГОТОВКА ДО СЕСІЇ → 4 год', done: false },
-                    { id: 't121', text: 'Перегляд всіх матеріалів → 1 год', done: false },
-                    { id: 't122', text: 'ОСТАТОЧНА ПЕРЕВІРКА ВСІХ РОБІТ', done: false },
-                ],
-                deadlines: []
-            },
-        ]
-    },
-
-    {
-        id: 'w8',
-        title: 'НЕДЕЛЯ 8 — ПІДГОТОВКА ДО СЕСІЇ',
-        dates: '26.05 – 04.06.2026',
-        badge: 'session',
-        days: [
-            {
-                id: 'w8d1', name: 'ВТ 26.05',
-                date: '2026-05-26',
-                tasks: [
-                    { id: 't123', text: 'Інтенсивне повторення всіх предметів → 4 год', done: false },
-                    { id: 't124', text: 'Написання шпаргалок і конспектів', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d2', name: 'СР 27.05',
-                date: '2026-05-27',
-                tasks: [
-                    { id: 't125', text: 'Розв\'язання задач → 4 год', done: false },
-                    { id: 't126', text: 'Репетиція екзаменів', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d3', name: 'ЧТ 28.05',
-                date: '2026-05-28',
-                tasks: [
-                    { id: 't127', text: 'Повторення слабких тем → 4 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d4', name: 'ПТ 29.05',
-                date: '2026-05-29',
-                tasks: [
-                    { id: 't128', text: 'Повторення → 4 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d5', name: 'СБ 30.05',
-                date: '2026-05-30',
-                tasks: [
-                    { id: 't129', text: 'Повторення → 4 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d6', name: 'НД 31.05',
-                date: '2026-05-31',
-                tasks: [
-                    { id: 't130', text: 'Повторення → 4 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d7', name: 'ПН 01.06',
-                date: '2026-06-01',
-                tasks: [
-                    { id: 't131', text: 'Фінальне повторення → 4 год', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d8', name: 'ВТ 02.06',
-                date: '2026-06-02',
-                tasks: [
-                    { id: 't132', text: 'Легка підготовка', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d9', name: 'СР 03.06',
-                date: '2026-06-03',
-                tasks: [
-                    { id: 't133', text: 'Легка підготовка', done: false },
-                ],
-                deadlines: []
-            },
-            {
-                id: 'w8d10', name: 'ЧТ 04.06 🔴 ОСТАННІЙ ДЕДЛАЙН',
-                date: '2026-06-04',
-                tasks: [
-                    { id: 't134', text: '🔴 ПЕРЕВІРКА Soft skills ДОПОВІДІ (до 04.06)', done: false },
-                ],
-                deadlines: [
-                    { text: '📍 ОСТАННІЙ ДЕДЛАЙН ПЕРЕД СЕСІЄЮ ✅', type: 'red' }
-                ]
-            },
-        ]
-    },
+  // ========== СПЕЦІАЛЬНІ ДАТИ ==========
+  { id: '2026-05-03', name: 'ВС 03.05 (4-5 ч)', date: '2026-05-03', week: 5, tasks: [
+    { id: 't24', text: 'Архітектура Лаб 6', status: 'not-started', progress: 0 },
+  ]},
+  { id: '2026-05-10', name: 'ВС 10.05 (4-5 ч)', date: '2026-05-10', week: 5, tasks: [
+    { id: 't25', text: 'Архітектура Лаб 7', status: 'not-started', progress: 0 },
+  ]},
 ];
+
+// State
+let state = {
+  days: [],
+  currentWeek: 1,
+  filteredDays: []
+};
+
+// Initialize
+function init() {
+  loadFromLocalStorage();
+  filterByWeek(1);
+  renderDays();
+  updateStats();
+  setupEventListeners();
+  renderWeekSelector();
+}
+
+// Local Storage
+function loadFromLocalStorage() {
+  const saved = localStorage.getItem('plannerData_v2');
+  if (saved) {
+    state.days = JSON.parse(saved);
+  } else {
+    state.days = JSON.parse(JSON.stringify(INITIAL_DAYS));
+    saveToLocalStorage();
+  }
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem('plannerData_v2', JSON.stringify(state.days));
+}
+
+// Filter by week
+function filterByWeek(week) {
+  state.currentWeek = week;
+  state.filteredDays = state.days.filter(d => d.week === week);
+  renderDays();
+}
+
+// Render week selector
+function renderWeekSelector() {
+  let selector = document.getElementById('weekSelector');
+  if (!selector) {
+    const header = document.querySelector('.header');
+    const statsDiv = header.querySelector('.stats');
+    selector = document.createElement('div');
+    selector.id = 'weekSelector';
+    selector.className = 'week-selector';
+    header.insertBefore(selector, statsDiv);
+  }
+
+  selector.innerHTML = '';
+  for (let i = 1; i <= 8; i++) {
+    const btn = document.createElement('button');
+    btn.className = `week-btn ${state.currentWeek === i ? 'active' : ''}`;
+    btn.textContent = `Неделя ${i}`;
+    btn.onclick = () => filterByWeek(i);
+    selector.appendChild(btn);
+  }
+}
+
+// Render days
+function renderDays() {
+  const container = document.getElementById('daysContainer');
+  container.innerHTML = '';
+
+  if (state.filteredDays.length === 0) {
+    container.innerHTML = '<div class="empty-state"><p>📭 Нет дней. Добавьте первый день!</p></div>';
+    return;
+  }
+
+  state.filteredDays.forEach(day => {
+    const dayCard = createDayCard(day);
+    container.appendChild(dayCard);
+  });
+}
+
+function createDayCard(day) {
+  const card = document.createElement('div');
+  card.className = 'day-card';
+
+  const header = document.createElement('div');
+  header.className = 'day-header';
+  header.innerHTML = `
+    <div>
+      <div class="day-title">${day.name}</div>
+      <div class="day-date">${formatDate(day.date)}</div>
+    </div>
+    <div class="day-actions">
+      <button class="btn-delete-day" title="Удалить день" onclick="deleteDay('${day.id}')">🗑️ Удалить</button>
+    </div>
+  `;
+
+  const tasksContainer = document.createElement('div');
+  tasksContainer.className = 'tasks-list';
+
+  day.tasks.forEach(task => {
+    const taskElement = createTaskElement(day.id, task);
+    tasksContainer.appendChild(taskElement);
+  });
+
+  // Add task form
+  const addTaskForm = document.createElement('div');
+  addTaskForm.className = 'add-task-form';
+  addTaskForm.innerHTML = `
+    <div class="add-task-input-group">
+      <input type="text" placeholder="Описание новой задачи" class="new-task-input" id="input-${day.id}">
+      <button class="btn btn-add-task" onclick="addTask('${day.id}')" title="Добавить задачу">➕ Добавить</button>
+    </div>
+  `;
+
+  card.appendChild(header);
+  card.appendChild(tasksContainer);
+  card.appendChild(addTaskForm);
+
+  return card;
+}
+
+function createTaskElement(dayId, task) {
+  const item = document.createElement('div');
+  item.className = `task-item ${task.status}`;
+
+  const progress = task.progress || 0;
+  const progressColor = task.status === 'done' ? '#4caf50' : 
+                        task.status === 'in-progress' ? '#ff9800' : '#f44336';
+
+  item.innerHTML = `
+    <div class="task-content">
+      <div class="task-text">${task.text}</div>
+      <div class="task-controls">
+        <div class="task-status-buttons">
+          <button class="btn-status ${task.status === 'done' ? 'done' : ''}" 
+                  onclick="updateTaskStatus('${dayId}', '${task.id}', 'done')"
+                  title="Отметить как сделано">
+            ✅ Сделано
+          </button>
+          <button class="btn-status ${task.status === 'in-progress' ? 'in-progress' : ''}" 
+                  onclick="updateTaskStatus('${dayId}', '${task.id}', 'in-progress')"
+                  title="В работе">
+            ⏳ В работе
+          </button>
+          <button class="btn-status ${task.status === 'not-started' ? 'not-started' : ''}" 
+                  onclick="updateTaskStatus('${dayId}', '${task.id}', 'not-started')"
+                  title="Не начато">
+            ❌ Не начато
+          </button>
+        </div>
+        <div class="progress-container">
+          <div class="progress-label">Прогресс: ${progress}%</div>
+          <div class="progress-bar" onclick="setProgress(event, '${dayId}', '${task.id}')">
+            <div class="progress-fill" style="width: ${progress}%; background: ${progressColor}">
+              ${progress > 10 ? progress + '%' : ''}
+            </div>
+          </div>
+        </div>
+        <button class="btn-delete-task" onclick="deleteTask('${dayId}', '${task.id}')" title="Удалить задачу">🗑️</button>
+      </div>
+    </div>
+  `;
+
+  return item;
+}
+
+// Task functions
+function updateTaskStatus(dayId, taskId, status) {
+  const day = state.days.find(d => d.id === dayId);
+  if (!day) return;
+
+  const task = day.tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  task.status = status;
+
+  if (status === 'done') {
+    task.progress = 100;
+    playSuccessSound();
+  } else if (status === 'in-progress' && task.progress === 0) {
+    task.progress = 50;
+    playClickSound();
+  } else if (status === 'not-started') {
+    task.progress = 0;
+    playClickSound();
+  }
+
+  saveToLocalStorage();
+  renderDays();
+  updateStats();
+}
+
+function setProgress(event, dayId, taskId) {
+  const day = state.days.find(d => d.id === dayId);
+  if (!day) return;
+
+  const task = day.tasks.find(t => t.id === taskId);
+  if (!task) return;
+
+  const bar = event.currentTarget;
+  const rect = bar.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100 / 5) * 5));
+
+  task.progress = percentage;
+
+  if (percentage === 0) {
+    task.status = 'not-started';
+  } else if (percentage === 100) {
+    task.status = 'done';
+  } else {
+    task.status = 'in-progress';
+  }
+
+  saveToLocalStorage();
+  renderDays();
+  updateStats();
+}
+
+function addTask(dayId) {
+  const day = state.days.find(d => d.id === dayId);
+  if (!day) return;
+
+  const input = document.getElementById(`input-${dayId}`);
+  const text = input.value.trim();
+
+  if (!text) {
+    alert('📝 Введите описание задачи!');
+    return;
+  }
+
+  const newTask = {
+    id: 'task-' + Date.now(),
+    text: text,
+    status: 'not-started',
+    progress: 0
+  };
+
+  day.tasks.push(newTask);
+  input.value = '';
+
+  saveToLocalStorage();
+  renderDays();
+  updateStats();
+}
+
+function deleteTask(dayId, taskId) {
+  if (!confirm('❌ Удалить эту задачу?')) return;
+
+  const day = state.days.find(d => d.id === dayId);
+  if (!day) return;
+
+  day.tasks = day.tasks.filter(t => t.id !== taskId);
+
+  saveToLocalStorage();
+  renderDays();
+  updateStats();
+}
+
+// Day functions
+function deleteDay(dayId) {
+  if (!confirm('❌ Удалить этот день и все его задачи?')) return;
+
+  state.days = state.days.filter(d => d.id !== dayId);
+
+  saveToLocalStorage();
+  filterByWeek(state.currentWeek);
+  updateStats();
+}
+
+function addDay() {
+  const dateInput = document.getElementById('dayDate');
+  const nameInput = document.getElementById('dayName');
+
+  const date = dateInput.value;
+  const name = nameInput.value.trim();
+
+  if (!date || !name) {
+    alert('📝 Заполните все поля!');
+    return;
+  }
+
+  if (state.days.some(d => d.id === date)) {
+    alert('⚠️ Этот день уже существует!');
+    return;
+  }
+
+  const newDay = {
+    id: date,
+    name: name,
+    date: date,
+    week: state.currentWeek,
+    tasks: []
+  };
+
+  state.days.push(newDay);
+  state.days.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  dateInput.value = '';
+  nameInput.value = '';
+
+  saveToLocalStorage();
+  filterByWeek(state.currentWeek);
+  updateStats();
+}
+
+// Stats update
+function updateStats() {
+  let totalTasks = 0;
+  let completedTasks = 0;
+  let inProgressTasks = 0;
+  let notStartedTasks = 0;
+
+  state.days.forEach(day => {
+    day.tasks.forEach(task => {
+      totalTasks++;
+      if (task.status === 'done') completedTasks++;
+      else if (task.status === 'in-progress') inProgressTasks++;
+      else notStartedTasks++;
+    });
+  });
+
+  document.getElementById('totalTasks').textContent = totalTasks;
+  document.getElementById('completedTasks').textContent = completedTasks;
+  document.getElementById('inProgressTasks').textContent = inProgressTasks;
+  document.getElementById('notStartedTasks').textContent = notStartedTasks;
+}
+
+// Utility functions
+function formatDate(dateStr) {
+  const date = new Date(dateStr + 'T00:00:00');
+  return new Intl.DateTimeFormat('ru-RU', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+}
+
+// Sound feedback
+function playClickSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+  } catch (e) {
+    // Audio context not supported
+  }
+}
+
+function playSuccessSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioContext.currentTime;
+    
+    const frequencies = [800, 1000, 1200];
+    frequencies.forEach((freq, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      
+      oscillator.frequency.value = freq;
+      oscillator.type = 'sine';
+      
+      const startTime = now + (index * 0.05);
+      gain.gain.setValueAtTime(0.3, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
+      
+      oscillator.start(startTime);
+      oscillator.stop(startTime + 0.1);
+    });
+  } catch (e) {
+    // Audio context not supported
+  }
+}
+
+// Event listeners
+function setupEventListeners() {
+  const addDayBtn = document.getElementById('addDayBtn');
+  if (addDayBtn) {
+    addDayBtn.addEventListener('click', addDay);
+    document.getElementById('dayDate').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addDay();
+    });
+    document.getElementById('dayName').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addDay();
+    });
+  }
+}
+
+// Make functions global
+window.updateTaskStatus = updateTaskStatus;
+window.setProgress = setProgress;
+window.addTask = addTask;
+window.deleteTask = deleteTask;
+window.deleteDay = deleteDay;
+window.addDay = addDay;
+window.filterByWeek = filterByWeek;
+
+// Start app
+init();
+
