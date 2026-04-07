@@ -1,4 +1,4 @@
-import './style.css';
+import './style.scss';
 
 // НОВЫЙ УПРОЩЕННЫЙ ПЛАН - ПО ОДНОЙ ЗАДАЧЕ НА ДЕНЬ
 const INITIAL_DAYS = [
@@ -88,25 +88,42 @@ const INITIAL_DAYS = [
   ]},
 ];
 
+const SUBJECTS = [
+  'ООП',
+  'Дискретна мат',
+  'Вища мат',
+  'Soft Skills',
+  'Архітектура',
+  'Англійська'
+];
+
 // State
 let state = {
   days: [],
   currentWeek: 1,
-  filteredDays: []
+  filteredDays: [],
+  selectedDayId: null
 };
+
+// Runtime-only countdown state for Done button
+const doneCountdowns = {};
+const doneCountdownTimers = {};
+
+function countdownKey(dayId, taskId) {
+  return `${dayId}::${taskId}`;
+}
+
+function clearDoneCountdown(dayId, taskId) {
+  const key = countdownKey(dayId, taskId);
+  if (doneCountdownTimers[key]) {
+    clearInterval(doneCountdownTimers[key]);
+    delete doneCountdownTimers[key];
+  }
+  delete doneCountdowns[key];
+}
 
 // Initialize
 function init() {
-  // Создаём main-content контейнер если его нет
-  let mainContent = document.getElementById('mainContent');
-  if (!mainContent) {
-    const container = document.querySelector('.container');
-    mainContent = document.createElement('div');
-    mainContent.id = 'mainContent';
-    mainContent.className = 'main-content';
-    container.appendChild(mainContent);
-  }
-  
   loadFromLocalStorage();
   filterByWeek(1);
   updateStats();
@@ -129,10 +146,77 @@ function saveToLocalStorage() {
   localStorage.setItem('plannerData_v2', JSON.stringify(state.days));
 }
 
+function getMaxWeek() {
+  return Math.max(...state.days.map(d => d.week || 1), 1);
+}
+
+function updateNextWeekButtonState() {
+  const btn = document.getElementById('nextWeekBtn');
+  if (!btn) return;
+
+  const maxWeek = getMaxWeek();
+  const hasNext = state.currentWeek < maxWeek;
+  btn.disabled = !hasNext;
+  btn.textContent = hasNext
+    ? `Неделя ${state.currentWeek + 1}`
+    : `Неделя ${state.currentWeek}`;
+}
+
+function goToNextWeek() {
+  const maxWeek = getMaxWeek();
+  if (state.currentWeek >= maxWeek) return;
+  filterByWeek(state.currentWeek + 1);
+}
+
 // Filter by week
 function filterByWeek(week) {
   state.currentWeek = week;
   state.filteredDays = state.days.filter(d => d.week === week);
+
+  // Refresh selector so active button reflects the current week.
+  renderWeekSelector();
+  
+  // Меняем палитру в зависимости от недели
+  const root = document.documentElement;
+  const paletteIndex = (week - 1) % 5; // 5 разных палитр
+  const palettes = [
+    { // Неделя 1 (классическая зелёная)
+      primary: '#1DB954',
+      secondary: '#2ECC71',
+      dark: '#0B0F0C',
+      light: '#E6F4EA'
+    },
+    { // Неделя 2 (более светлая)
+      primary: '#27AE60',
+      secondary: '#2ECC71',
+      dark: '#1a2a22',
+      light: '#E6F4EA'
+    },
+    { // Неделя 3 
+      primary: '#16A34A',
+      secondary: '#22C55E',
+      dark: '#0F1A14',
+      light: '#F0FDF4'
+    },
+    { // Неделя 4
+      primary: '#059669',
+      secondary: '#10B981',
+      dark: '#0D1117',
+      light: '#F0FDF4'
+    },
+    { // Неделя 5
+      primary: '#047857',
+      secondary: '#14B8A6',
+      dark: '#0A1628',
+      light: '#F0FDF4'
+    }
+  ];
+  
+  const palette = palettes[paletteIndex];
+  document.body.style.setProperty('--primary', palette.primary);
+  document.body.style.setProperty('--secondary', palette.secondary);
+  document.body.style.setProperty('--dark', palette.dark);
+  document.body.style.setProperty('--light', palette.light);
   
   // Добавляем визуальный эффект переключения
   const container = document.getElementById('daysContainer');
@@ -146,7 +230,206 @@ function filterByWeek(week) {
   }, 300);
   
   updateStats();
+  updateNextWeekButtonState();
 }
+
+// Показать модальное окно с задачами
+function showTasksModal(filterType) {
+  let modal = document.getElementById('tasksModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'tasksModal';
+    modal.className = 'modal';
+    document.body.appendChild(modal);
+  }
+
+  let allTasks = [];
+  state.days.forEach(day => {
+    day.tasks.forEach(task => {
+      allTasks.push({ ...task, dayId: day.id, dayName: day.name });
+    });
+  });
+
+  let filteredTasks = allTasks;
+  let title = '';
+
+  switch(filterType) {
+    case 'all':
+      title = `Всего задач: ${allTasks.length}`;
+      break;
+    case 'done':
+      filteredTasks = allTasks.filter(t => t.status === 'done');
+      title = `✅ Выполнено: ${filteredTasks.length}`;
+      break;
+    case 'in-progress':
+      filteredTasks = allTasks.filter(t => t.status === 'in-progress');
+      title = `⏳ В работе: ${filteredTasks.length}`;
+      break;
+    case 'not-started':
+      filteredTasks = allTasks.filter(t => t.status === 'not-started');
+      title = `❌ Не начато: ${filteredTasks.length}`;
+      break;
+  }
+
+  let html = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>${title}</h2>
+        <button class="modal-close" onclick="closeTasksModal()">✕</button>
+      </div>
+      <div class="modal-body">
+  `;
+
+  if (filteredTasks.length === 0) {
+    html += '<p class="empty-tasks">Нет задач</p>';
+  } else {
+    filteredTasks.forEach(task => {
+      const progressColor = task.status === 'done' ? '#4caf50' : 
+                           task.status === 'in-progress' ? '#ff9800' : '#f44336';
+      
+      if (filterType === 'in-progress') {
+        // Горизонтальный ползунок для задач в работе (как в карточках)
+        html += `
+          <div class="task-modal-item">
+            <div class="task-modal-info">
+              <div class="task-modal-text">${task.text}</div>
+              <div class="task-modal-day">${task.dayName}</div>
+            </div>
+            <div class="progress-bar-modal">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${task.progress}%; background: ${progressColor}"></div>
+                <div class="progress-overlay-text">${task.progress}%</div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="task-modal-item">
+            <div class="task-modal-text">${task.text}</div>
+            <div class="task-modal-day">${task.dayName}</div>
+          </div>
+        `;
+      }
+    });
+  }
+
+  html += `
+      </div>
+      ${filterType === 'all' ? `
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="openTaskCreatorFromModal()">Сделать задачу</button>
+      </div>
+      ` : ''}
+    </div>
+  `;
+
+  modal.innerHTML = html;
+  modal.style.display = 'flex';
+}
+
+function closeTasksModal() {
+  const modal = document.getElementById('tasksModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function openTaskCreatorFromModal() {
+  closeTasksModal();
+  openTaskCreateModal();
+}
+
+function openTaskCreatorForDay(dayId) {
+  state.selectedDayId = dayId;
+  openTaskCreateModal(dayId);
+}
+
+function openTaskCreateModal(dayId = null) {
+  let modal = document.getElementById('taskCreateModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'taskCreateModal';
+    modal.className = 'modal';
+    document.body.appendChild(modal);
+  }
+
+  const selectedDayId = dayId || state.selectedDayId || '';
+  const dayObj = selectedDayId ? state.days.find((d) => d.id === selectedDayId) : null;
+  const dayLabel = dayObj ? `Выбран день: ${dayObj.name}` : 'Выбран день: по дате дедлайна';
+
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mi = String(now.getMinutes()).padStart(2, '0');
+  const defaultDeadlineDate = selectedDayId || `${yyyy}-${mm}-${dd}`;
+  const defaultDeadlineTime = `${hh}:${mi}`;
+
+  modal.innerHTML = `
+    <div class="modal-content task-create-modal-content">
+      <div class="modal-header">
+        <h2>✅ Сделать задачу</h2>
+        <button class="modal-close" onclick="closeTaskCreateModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="task-target-day" id="selectedDayLabel">${dayLabel}</p>
+        <input type="hidden" id="taskTargetDay" value="${selectedDayId}">
+        <div class="task-creator-form">
+          <div class="form-group">
+            <label for="taskDescription">Описание:</label>
+            <input type="text" id="taskDescription" placeholder="Например: Лаба 3, подготовка отчета">
+          </div>
+          <div class="form-group">
+            <label for="taskDeadlineDate">Дедлайн (дата):</label>
+            <input type="date" id="taskDeadlineDate" value="${defaultDeadlineDate}">
+          </div>
+          <div class="form-group">
+            <label for="taskDeadlineTime">Время дедлайна:</label>
+            <input type="time" id="taskDeadlineTime" value="${defaultDeadlineTime}">
+          </div>
+          <div class="form-group">
+            <label for="taskHours">Время на работу (часы):</label>
+            <div class="number-field">
+              <input type="number" id="taskHours" min="1" max="12" step="1" value="2">
+              <div class="number-arrows">
+                <button type="button" class="arrow-btn" onclick="adjustTaskHours(1)" title="Больше">▲</button>
+                <button type="button" class="arrow-btn" onclick="adjustTaskHours(-1)" title="Меньше">▼</button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="taskSubject">Предмет:</label>
+            <select id="taskSubject"></select>
+          </div>
+          <button id="createTaskBtn" class="btn btn-primary" onclick="createTaskFromForm()">Сделать задачу</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  initTaskCreatorForm();
+  modal.style.display = 'flex';
+  const descriptionInput = document.getElementById('taskDescription');
+  if (descriptionInput) descriptionInput.focus();
+}
+
+function closeTaskCreateModal() {
+  const modal = document.getElementById('taskCreateModal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Обработчик для закрытия модали при клике вне контента
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('tasksModal');
+  if (modal && e.target === modal) {
+    modal.style.display = 'none';
+  }
+
+  const taskCreateModal = document.getElementById('taskCreateModal');
+  if (taskCreateModal && e.target === taskCreateModal) {
+    taskCreateModal.style.display = 'none';
+  }
+});
 
 // Render week header
 function renderWeekHeader() {
@@ -206,7 +489,7 @@ function renderWeekSelector() {
   selector.innerHTML = '';
   
   // Определяем максимальную неделю из данных
-  const maxWeek = Math.max(...state.days.map(d => d.week || 1), 1);
+  const maxWeek = getMaxWeek();
   
   // Создаём кнопки только для существующих недель
   for (let i = 1; i <= maxWeek; i++) {
@@ -261,19 +544,16 @@ function createDayCard(day) {
     tasksContainer.appendChild(taskElement);
   });
 
-  // Add task form
-  const addTaskForm = document.createElement('div');
-  addTaskForm.className = 'add-task-form';
-  addTaskForm.innerHTML = `
-    <div class="add-task-input-group">
-      <input type="text" placeholder="Описание новой задачи" class="new-task-input" id="input-${day.id}">
-      <button class="btn btn-add-task" onclick="addTask('${day.id}')" title="Добавить задачу">➕ Добавить</button>
-    </div>
+  // Переход к отдельному окну создания задачи
+  const addTaskCta = document.createElement('div');
+  addTaskCta.className = 'day-add-task-cta';
+  addTaskCta.innerHTML = `
+    <button class="btn btn-add-task" onclick="openTaskCreatorForDay('${day.id}')" title="Открыть окно добавления задачи">➕ Добавить задачу</button>
   `;
 
   card.appendChild(header);
   card.appendChild(tasksContainer);
-  card.appendChild(addTaskForm);
+  card.appendChild(addTaskCta);
 
   return card;
 }
@@ -286,34 +566,33 @@ function createTaskElement(dayId, task) {
   const progressColor = task.status === 'done' ? '#4caf50' : 
                         task.status === 'in-progress' ? '#ff9800' : '#f44336';
 
+  const key = countdownKey(dayId, task.id);
+  const countdown = doneCountdowns[key];
+  const doneLabel = typeof countdown === 'number' ? `⏳ ${countdown}` : '✅ Сделано';
+
   item.innerHTML = `
     <div class="task-content">
       <div class="task-text">${task.text}</div>
       <div class="task-controls">
-        <div class="task-status-buttons">
-          <button class="btn-status ${task.status === 'done' ? 'done' : ''}" 
-                  onclick="updateTaskStatus('${dayId}', '${task.id}', 'done')"
-                  title="Отметить как сделано">
-            ✅ Сделано
-          </button>
-          <button class="btn-status ${task.status === 'in-progress' ? 'in-progress' : ''}" 
-                  onclick="updateTaskStatus('${dayId}', '${task.id}', 'in-progress')"
-                  title="В работе">
-            ⏳ В работе
-          </button>
-          <button class="btn-status ${task.status === 'not-started' ? 'not-started' : ''}" 
+        <div class="progress-layout">
+          <button class="btn-not-started-left" 
                   onclick="updateTaskStatus('${dayId}', '${task.id}', 'not-started')"
                   title="Не начато">
             ❌ Не начато
           </button>
-        </div>
-        <div class="progress-container">
-          <div class="progress-label">Прогресс: ${progress}%</div>
-          <div class="progress-bar" onclick="setProgress(event, '${dayId}', '${task.id}')">
-            <div class="progress-fill" style="width: ${progress}%; background: ${progressColor}">
-              ${progress > 10 ? progress + '%' : ''}
+          <div class="progress-center">
+            <div class="progress-bar-wrapper" onclick="setProgress(event, '${dayId}', '${task.id}')">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%; background: ${progressColor}"></div>
+                <div class="progress-overlay-text">${progress}%</div>
+              </div>
             </div>
           </div>
+          <button class="btn-done-right" 
+                  onclick="startDoneTimer('${dayId}', '${task.id}')"
+                  title="Отметить как сделано">
+            ${doneLabel}
+          </button>
         </div>
         <button class="btn-delete-task" onclick="deleteTask('${dayId}', '${task.id}')" title="Удалить задачу">🗑️</button>
       </div>
@@ -321,6 +600,33 @@ function createTaskElement(dayId, task) {
   `;
 
   return item;
+}
+
+function startDoneTimer(dayId, taskId) {
+  const key = countdownKey(dayId, taskId);
+  if (doneCountdownTimers[key]) return;
+
+  updateTaskStatus(dayId, taskId, 'done');
+
+  doneCountdowns[key] = 3;
+  renderDays();
+
+  doneCountdownTimers[key] = setInterval(() => {
+    doneCountdowns[key] -= 1;
+
+    if (doneCountdowns[key] > 0) {
+      renderDays();
+      return;
+    }
+
+    clearDoneCountdown(dayId, taskId);
+    renderDays();
+
+    const shouldDelete = confirm('Хотите ли вы удалить задание?');
+    if (shouldDelete) {
+      deleteTaskWithCleanup(dayId, taskId, false);
+    }
+  }, 1000);
 }
 
 // Task functions
@@ -376,43 +682,32 @@ function setProgress(event, dayId, taskId) {
   updateStats();
 }
 
-function addTask(dayId) {
-  const day = state.days.find(d => d.id === dayId);
-  if (!day) return;
-
-  const input = document.getElementById(`input-${dayId}`);
-  const text = input.value.trim();
-
-  if (!text) {
-    alert('📝 Введите описание задачи!');
-    return;
-  }
-
-  const newTask = {
-    id: 'task-' + Date.now(),
-    text: text,
-    status: 'not-started',
-    progress: 0
-  };
-
-  day.tasks.push(newTask);
-  input.value = '';
-
-  saveToLocalStorage();
-  renderDays();
-  updateStats();
-}
-
 function deleteTask(dayId, taskId) {
   if (!confirm('❌ Удалить эту задачу?')) return;
+
+  deleteTaskWithCleanup(dayId, taskId, true);
+}
+
+function deleteTaskWithCleanup(dayId, taskId, askWhenDayEmpty) {
+  clearDoneCountdown(dayId, taskId);
 
   const day = state.days.find(d => d.id === dayId);
   if (!day) return;
 
   day.tasks = day.tasks.filter(t => t.id !== taskId);
 
+  if (day.tasks.length === 0) {
+    const shouldDeleteDay = askWhenDayEmpty
+      ? confirm('В этом дне не осталось задач. Удалить день?')
+      : true;
+
+    if (shouldDeleteDay) {
+      state.days = state.days.filter(d => d.id !== dayId);
+    }
+  }
+
   saveToLocalStorage();
-  renderDays();
+  filterByWeek(state.currentWeek);
   updateStats();
 }
 
@@ -427,40 +722,108 @@ function deleteDay(dayId) {
   updateStats();
 }
 
-function addDay() {
-  const dateInput = document.getElementById('dayDate');
-  const nameInput = document.getElementById('dayName');
+function createTaskFromForm() {
+  const descriptionInput = document.getElementById('taskDescription');
+  const targetDayInput = document.getElementById('taskTargetDay');
+  const deadlineDateInput = document.getElementById('taskDeadlineDate');
+  const deadlineTimeInput = document.getElementById('taskDeadlineTime');
+  const hoursInput = document.getElementById('taskHours');
+  const subjectInput = document.getElementById('taskSubject');
 
-  const date = dateInput.value;
-  const name = nameInput.value.trim();
+  const description = (descriptionInput?.value || '').trim();
+  const deadlineDate = deadlineDateInput?.value;
+  const deadlineTime = deadlineTimeInput?.value;
+  const hours = Number(hoursInput?.value || 0);
+  const subject = subjectInput?.value;
+  const deadline = (deadlineDate && deadlineTime) ? `${deadlineDate}T${deadlineTime}` : '';
 
-  if (!date || !name) {
-    alert('📝 Заполните все поля!');
+  if (!description || !deadline || !hours || !subject) {
+    alert('Заполните: описание, дату дедлайна, время дедлайна, время и предмет.');
     return;
   }
 
-  if (state.days.some(d => d.id === date)) {
-    alert('⚠️ Этот день уже существует!');
-    return;
+  const targetDate = (targetDayInput?.value || '').trim() || deadline.slice(0, 10);
+
+  let targetDay = state.days.find((d) => d.id === targetDate);
+  if (!targetDay) {
+    const dateObj = new Date(targetDate + 'T00:00:00');
+    const weekdayShort = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'][dateObj.getDay()];
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+
+    targetDay = {
+      id: targetDate,
+      name: `${weekdayShort} ${dd}.${mm} (4-5 ч)`,
+      date: targetDate,
+      week: state.currentWeek,
+      tasks: []
+    };
+    state.days.push(targetDay);
+    state.days.sort((a, b) => new Date(a.date) - new Date(b.date));
   }
 
-  const newDay = {
-    id: date,
-    name: name,
-    date: date,
-    week: state.currentWeek,
-    tasks: []
+  const deadlineDateObj = new Date(deadline);
+  const d = String(deadlineDateObj.getDate()).padStart(2, '0');
+  const m = String(deadlineDateObj.getMonth() + 1).padStart(2, '0');
+  const hh = String(deadlineDateObj.getHours()).padStart(2, '0');
+  const min = String(deadlineDateObj.getMinutes()).padStart(2, '0');
+
+  const newTask = {
+    id: 'task-' + Date.now(),
+    text: `${subject} | ${description} | дедлайн ${d}.${m} ${hh}:${min} | ${hours}ч`,
+    status: 'not-started',
+    progress: 0
   };
 
-  state.days.push(newDay);
-  state.days.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  dateInput.value = '';
-  nameInput.value = '';
+  targetDay.tasks.push(newTask);
 
   saveToLocalStorage();
   filterByWeek(state.currentWeek);
   updateStats();
+
+  if (descriptionInput) descriptionInput.value = '';
+  if (targetDayInput) targetDayInput.value = '';
+  const selectedDayLabel = document.getElementById('selectedDayLabel');
+  if (selectedDayLabel) selectedDayLabel.textContent = 'Выбран день: по дате дедлайна';
+  state.selectedDayId = null;
+  if (deadlineDateInput) deadlineDateInput.value = '';
+  if (deadlineTimeInput) deadlineTimeInput.value = '';
+  if (hoursInput) hoursInput.value = '2';
+  if (subjectInput) subjectInput.selectedIndex = 0;
+
+  closeTaskCreateModal();
+}
+
+function adjustTaskHours(delta) {
+  const hoursInput = document.getElementById('taskHours');
+  if (!hoursInput) return;
+  const current = Number(hoursInput.value || 2);
+  const next = Math.max(1, Math.min(12, current + delta));
+  hoursInput.value = String(next);
+}
+
+function initTaskCreatorForm() {
+  const subjectSelect = document.getElementById('taskSubject');
+  if (!subjectSelect) return;
+  subjectSelect.innerHTML = SUBJECTS.map((s) => `<option value="${s}">${s}</option>`).join('');
+
+  // Дедлайн по умолчанию: сегодня + текущее время
+  const deadlineDateInput = document.getElementById('taskDeadlineDate');
+  const deadlineTimeInput = document.getElementById('taskDeadlineTime');
+  if ((deadlineDateInput && !deadlineDateInput.value) || (deadlineTimeInput && !deadlineTimeInput.value)) {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mi = String(now.getMinutes()).padStart(2, '0');
+    if (deadlineDateInput && !deadlineDateInput.value) {
+      deadlineDateInput.value = `${yyyy}-${mm}-${dd}`;
+    }
+    if (deadlineTimeInput && !deadlineTimeInput.value) {
+      deadlineTimeInput.value = `${hh}:${mi}`;
+    }
+  }
 }
 
 // Stats update
@@ -483,6 +846,12 @@ function updateStats() {
   document.getElementById('completedTasks').textContent = completedTasks;
   document.getElementById('inProgressTasks').textContent = inProgressTasks;
   document.getElementById('notStartedTasks').textContent = notStartedTasks;
+  
+  // Добавляем обработчики клика
+  document.getElementById('totalTasksItem').onclick = () => showTasksModal('all');
+  document.getElementById('completedTasksItem').onclick = () => showTasksModal('done');
+  document.getElementById('inProgressTasksItem').onclick = () => showTasksModal('in-progress');
+  document.getElementById('notStartedTasksItem').onclick = () => showTasksModal('not-started');
 }
 
 // Utility functions
@@ -549,27 +918,30 @@ function playSuccessSound() {
 
 // Event listeners
 function setupEventListeners() {
-  const addDayBtn = document.getElementById('addDayBtn');
-  if (addDayBtn) {
-    addDayBtn.addEventListener('click', addDay);
-    document.getElementById('dayDate').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') addDay();
-    });
-    document.getElementById('dayName').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') addDay();
-    });
+  const nextWeekBtn = document.getElementById('nextWeekBtn');
+  if (nextWeekBtn) {
+    nextWeekBtn.addEventListener('click', goToNextWeek);
   }
+
 }
 
 // Make functions global
 window.updateTaskStatus = updateTaskStatus;
 window.setProgress = setProgress;
-window.addTask = addTask;
 window.deleteTask = deleteTask;
 window.deleteDay = deleteDay;
-window.addDay = addDay;
 window.filterByWeek = filterByWeek;
+window.goToNextWeek = goToNextWeek;
+window.showTasksModal = showTasksModal;
+window.closeTasksModal = closeTasksModal;
+window.openTaskCreatorFromModal = openTaskCreatorFromModal;
+window.openTaskCreatorForDay = openTaskCreatorForDay;
+window.closeTaskCreateModal = closeTaskCreateModal;
+window.adjustTaskHours = adjustTaskHours;
+window.createTaskFromForm = createTaskFromForm;
+window.startDoneTimer = startDoneTimer;
 
 // Start app
+initTaskCreatorForm();
 init();
 
