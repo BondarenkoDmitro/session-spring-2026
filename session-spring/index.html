@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Planner 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css"/>
+</head>
+<body>
+
+<div class="noise"></div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-meta">
+      <span class="period-label">07.04 — 04.06.2026</span>
+      <span class="weeks-label">8 НЕДЕЛЬ</span>
+    </div>
+    <h1 class="header-title">STUDY<br>PLANNER</h1>
+    <div class="header-stats" id="headerStats">
+      <div class="stat"><span class="stat-num" id="totalDays">0</span><span class="stat-label">дней</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num" id="totalTasks">0</span><span class="stat-label">задач</span></div>
+      <div class="stat-div"></div>
+      <div class="stat"><span class="stat-num" id="doneTasks">0</span><span class="stat-label">готово</span></div>
+    </div>
+  </header>
+
+  <!-- WEEKS CONTAINER -->
+  <div id="weeksContainer"></div>
+
+  <!-- ADD FORM -->
+  <section class="add-section">
+    <div class="add-section-title">
+      <span class="add-icon">+</span>
+      ДОБАВИТЬ ДЕНЬ / ЗАДАЧУ
+    </div>
+
+    <div class="add-grid">
+      <div class="add-col">
+        <div class="field-group">
+          <label>НЕДЕЛЯ</label>
+          <select id="addWeek">
+            <option value="new">— Новая неделя —</option>
+          </select>
+        </div>
+        <div class="field-group" id="newWeekFields" style="display:none">
+          <label>НАЗВАНИЕ НЕДЕЛИ</label>
+          <input type="text" id="newWeekName" placeholder="Неделя 9: 05.06 - 11.06"/>
+        </div>
+      </div>
+
+      <div class="add-col">
+        <div class="field-group">
+          <label>ДЕНЬ</label>
+          <select id="addDay">
+            <option value="new">— Новый день —</option>
+          </select>
+        </div>
+        <div class="field-group" id="newDayFields">
+          <label>ДАТА И НАЗВАНИЕ ДНЯ</label>
+          <input type="text" id="newDayName" placeholder="ПН 08.06 (4-5 часов)"/>
+        </div>
+      </div>
+
+      <div class="add-col add-col--wide">
+        <div class="field-group">
+          <label>ЗАДАЧА</label>
+          <input type="text" id="newTask" placeholder="Название задачи → 2 часа"/>
+        </div>
+        <div class="field-group">
+          <label>ДЕДЛАЙН / ПОМЕТКА (необязательно)</label>
+          <input type="text" id="newDeadline" placeholder="📍 СДАЧА: ..."/>
+        </div>
+      </div>
+    </div>
+
+    <button class="add-btn" id="addBtn">ДОБАВИТЬ</button>
+  </section>
+
+</div>
+
+<script src="src/main.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
