@@ -3,48 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📋 Мой Ежедневный План Обучения</title>
+  <title>Учебный Трекер: Задачи до Сессии</title>
+  <link rel="stylesheet" href="./src/style.css">
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <h1>📋 ЕЖЕДНЕВНЫЙ ПЛАН ОБУЧЕНИЯ</h1>
-      <p class="period">07.04.2026 - 04.06.2026 | 8 недель | 4-5 часов в день</p>
-      <div class="stats">
-        <div class="stat-item" id="totalTasksItem" title="Нажмите для просмотра всех задач">
-          <span class="stat-label">Всего задач:</span>
-          <span class="stat-value" id="totalTasks">0</span>
-        </div>
-        <div class="stat-item" id="completedTasksItem" title="Нажмите для просмотра выполненных задач">
-          <span class="stat-label">✅ Выполнено:</span>
-          <span class="stat-value" id="completedTasks">0</span>
-        </div>
-        <div class="stat-item" id="inProgressTasksItem" title="Нажмите для просмотра задач в работе">
-          <span class="stat-label">⏳ В работе:</span>
-          <span class="stat-value" id="inProgressTasks">0</span>
-        </div>
-        <div class="stat-item" id="notStartedTasksItem" title="Нажмите для просмотра неначатых задач">
-          <span class="stat-label">❌ Не начато:</span>
-          <span class="stat-value" id="notStartedTasks">0</span>
-        </div>
+<div class="container">
+  <!-- Шапка и статистика -->
+  <header class="header">
+    <h1>Задачи до сессии (до 21.12.2026)</h1>
+    <p class="subtitle">Плановый финиш всех 25 работ и КП: <strong>21 ноября 2026 г.</strong></p>
+
+    <div class="progress-section">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
       </div>
-    </header>
+      <div class="progress-info">
+        <span id="progressText">0 из 0 задач выполнено (0%)</span>
+        <span id="daysLeftText">До сессии осталось: -- дн.</span>
+      </div>
+    </div>
+  </header>
 
-    <main class="main-content" id="mainContent">
-      <section class="days-section">
-        <h2>📅 Дни</h2>
-        <div id="daysContainer" class="days-container">
+  <!-- Кнопки выбора недель (1–8) -->
+  <nav class="week-selector">
+    <button class="week-btn active" data-week="all">Все недели</button>
+    <button class="week-btn" data-week="1">Неделя 1</button>
+    <button class="week-btn" data-week="2">Неделя 2</button>
+    <button class="week-btn" data-week="3">Неделя 3</button>
+    <button class="week-btn" data-week="4">Неделя 4</button>
+    <button class="week-btn" data-week="5">Неделя 5</button>
+    <button class="week-btn" data-week="6">Неделя 6</button>
+    <button class="week-btn" data-week="7">Неделя 7</button>
+    <button class="week-btn" data-week="8">Неделя 8</button>
+  </nav>
+
+  <!-- Панель управления -->
+  <section class="controls-panel">
+    <div class="controls-left">
+      <h2 id="currentViewTitle">Все задачи</h2>
+    </div>
+    <div class="controls-right">
+      <button id="toggleAddModalBtn" class="btn btn-primary">+ Добавить задачу</button>
+      <button id="resetDataBtn" class="btn btn-danger">Сбросить план</button>
+    </div>
+  </section>
+
+  <!-- Список задач -->
+  <main class="tasks-container" id="tasksList">
+    <!-- Динамически заполняется через JS -->
+  </main>
+
+  <!-- Модальное окно создания задачи -->
+  <div class="modal" id="addModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Добавить новую задачу</h3>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="addTaskForm">
+        <div class="form-group">
+          <label for="taskWeek">Неделя (1–8):</label>
+          <select id="taskWeek" required>
+            <option value="1">Неделя 1 (28.09 - 04.10)</option>
+            <option value="2">Неделя 2 (05.10 - 11.10)</option>
+            <option value="3">Неделя 3 (12.10 - 18.10)</option>
+            <option value="4">Неделя 4 (19.10 - 25.10)</option>
+            <option value="5">Неделя 5 (26.10 - 01.11)</option>
+            <option value="6">Неделя 6 (02.11 - 08.11)</option>
+            <option value="7">Неделя 7 (09.11 - 15.11)</option>
+            <option value="8">Неделя 8 (16.11 - 22.11)</option>
+          </select>
         </div>
-      </section>
-
-      <section class="next-week-section">
-        <button id="nextWeekBtn" class="btn btn-next-week">➡️ Перейти на след. неделю</button>
-      </section>
-
-    </main>
+        <div class="form-group">
+          <label for="taskDay">День недели:</label>
+          <select id="taskDay" required>
+            <option value="Понедельник">Понедельник</option>
+            <option value="Вторник">Вторник</option>
+            <option value="Среда">Среда</option>
+            <option value="Четверг">Четверг</option>
+            <option value="Пятница">Пятница</option>
+            <option value="Суббота">Суббота</option>
+            <option value="Воскресенье">Воскресенье</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="taskSubject">Предмет:</label>
+          <select id="taskSubject" required>
+            <option value="Веб-технологии">Веб-технологии (Дизайн)</option>
+            <option value="ОПИ">Основы программной инженерии</option>
+            <option value="АиСД">Алгоритмы и структуры данных</option>
+            <option value="Курсовой проект">Курсовой проект (АиСД)</option>
+            <option value="Другое">Другое</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="taskTitle">Описание задачи:</label>
+          <input type="text" id="taskTitle" placeholder="Например: Сдача лабы №4" required>
+        </div>
+        <div class="form-group">
+          <label for="taskHours">Время работы (часов):</label>
+          <input type="number" id="taskHours" step="0.5" min="0" value="2" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">Отмена</button>
+          <button type="submit" class="btn btn-primary">Сохранить задачу</button>
+        </div>
+      </form>
+    </div>
   </div>
+</div>
 
-  <script type="module" src="/src/main.js"></script>
+<script src="src/main.js"></script>
 </body>
 </html>
-
